@@ -22,6 +22,6 @@ private:
     [[nodiscard]] int create_listen_socket() const;
     static std::string read_request(int client_fd);
     static HttpRequestLine parse_request_line(const std::string& raw_request);
-    static std::string build_response(const HttpRequestLine& request_line);
+    static std::string build_response(const HttpRequestLine& request_line, const std::string& client_ip);
     static void send_all(int fd, const std::string& data);
 };
