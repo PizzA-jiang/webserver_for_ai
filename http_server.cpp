@@ -35,9 +35,13 @@ void HttpServer::run() {
             continue;
         }
 
+        char ip_buf[INET_ADDRSTRLEN]{};
+        ::inet_ntop(AF_INET, &client_addr.sin_addr, ip_buf, sizeof(ip_buf));
+        const std::string client_ip(ip_buf);
+
         const std::string raw_request = read_request(client_fd);
         const HttpRequestLine request_line = parse_request_line(raw_request);
-        const std::string response = build_response(request_line);
+        const std::string response = build_response(request_line, client_ip);
         send_all(client_fd, response);
         ::close(client_fd);
     }
@@ -115,7 +119,7 @@ HttpServer::HttpRequestLine HttpServer::parse_request_line(const std::string& ra
     return request_line;
 }
 
-std::string HttpServer::build_response(const HttpRequestLine& request_line) {
+std::string HttpServer::build_response(const HttpRequestLine& request_line, const std::string& client_ip) {
     if (!request_line.valid) {
         const std::string body = "Bad Request\n";
         return "HTTP/1.1 400 Bad Request\r\n"
@@ -133,10 +137,7 @@ std::string HttpServer::build_response(const HttpRequestLine& request_line) {
                "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
     }
 
-    const std::string body = "Hello from TinyWebServer\n"
-                             "method=" + request_line.method + "\n"
-                             "path=" + request_line.path + "\n"
-                             "version=" + request_line.version + "\n";
+    const std::string body = "你好\n";
 
     return "HTTP/1.1 200 OK\r\n"
            "Content-Type: text/plain; charset=utf-8\r\n"
