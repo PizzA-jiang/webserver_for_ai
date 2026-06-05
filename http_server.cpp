@@ -1,5 +1,4 @@
 #include "http_server.h"
-
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cerrno>
