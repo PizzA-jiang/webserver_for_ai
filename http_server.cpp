@@ -59,6 +59,13 @@ int HttpServer::create_listen_socket() const {
         throw make_system_error("setsockopt(SO_REUSEADDR)");
     }
 
+#ifdef SO_REUSEPORT
+    if (::setsockopt(listen_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+        ::close(listen_fd);
+        throw make_system_error("setsockopt(SO_REUSEPORT)");
+    }
+#endif
+
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
